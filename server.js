@@ -1,65 +1,80 @@
 const express   = require('express');
 const app       = express();
 const csvdb     = require('csv-database');
+var cors        = require('cors');
+var bodyParser  = require('body-parser');
+app.use(bodyParser.json() );
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+app.use(cors());
+app.use(express.static('assets'));
+app.use(express.static('node_modules'));
 
 const port      = 3000;
 
 app.get('/', (req, res) => {
-    res.send(req);
+    res.sendFile(__dirname+'/views/company.html');;
 });
 
-app.get('/csv/all', async (req, res) => {
-    const db    = await csvdb("./data/default.csv", ["Col1","Col2","Col3"], ",");
+app.post('/company/update', async (req, res) => {
+    const ID    = req.body.CMGUnmaskedID;
+    const data  = req.body.NewData;
+
+    const db    = await csvdb("./data/companies.csv", [
+            "CMGUnmaskedID","CMGUnmaskedName","ClientTier","GCPStream","GCPBusiness",
+            "CMGGlobalBU","CMGSegmentName","GlobalControlPoint","GCPGeography","GlobalRelationshipManagerName",
+            "REVENUE FY14","REVENYE FY15X"," Deposits_EOP_FY14"," Deposits_EOP_FY15x"," TotalLimits_EOP_FY14",
+            " TotalLimits_EOP_FY15YTD"," TotalLimits_EOP_FY15x"," RWAFY15"," RWA FY14","REV/RWA FY14",
+            "REV/RWA FY15"," NPAT_AllocEq_FY14"," NPAT_AllocEq_FY15X"," RegulatoryCapital_AVG_FY15"," RegulatoryCapital_AVG_FY14",
+            "ROE FY14", "ROE FY15"], ",");
+    const result = await db.edit({CMGUnmaskedID: ID}, data);
+    res.status(200).send("Saved");
+});
+
+app.post('/company/getDetail', async (req, res) => {
+    const ID = req.body.CMGUnmaskedID;
+
+    const db    = await csvdb("./data/companies.csv", [
+            "CMGUnmaskedID","CMGUnmaskedName","ClientTier","GCPStream","GCPBusiness",
+            "CMGGlobalBU","CMGSegmentName","GlobalControlPoint","GCPGeography","GlobalRelationshipManagerName",
+            "REVENUE FY14","REVENYE FY15X"," Deposits_EOP_FY14"," Deposits_EOP_FY15x"," TotalLimits_EOP_FY14",
+            " TotalLimits_EOP_FY15YTD"," TotalLimits_EOP_FY15x"," RWAFY15"," RWA FY14","REV/RWA FY14",
+            "REV/RWA FY15"," NPAT_AllocEq_FY14"," NPAT_AllocEq_FY15X"," RegulatoryCapital_AVG_FY15"," RegulatoryCapital_AVG_FY14",
+            "ROE FY14", "ROE FY15"], ",");
+    const result = await db.get({CMGUnmaskedID: ID});
+    res.send(result);
+});
+
+app.post('/company/getData', async (req, res) => {
+    const limit = parseInt(req.body.length);
+    const offset= parseInt(req.body.start);
+    const sumol = offset+limit;
+    const filter= req.body.filter !== undefined ? req.body.filter : "";
+
+    const db    = await csvdb("./data/companies.csv", [
+            "CMGUnmaskedID","CMGUnmaskedName","ClientTier","GCPStream","GCPBusiness",
+            "CMGGlobalBU","CMGSegmentName","GlobalControlPoint","GCPGeography","GlobalRelationshipManagerName",
+            "REVENUE FY14","REVENYE FY15X"," Deposits_EOP_FY14"," Deposits_EOP_FY15x"," TotalLimits_EOP_FY14",
+            " TotalLimits_EOP_FY15YTD"," TotalLimits_EOP_FY15x"," RWAFY15"," RWA FY14","REV/RWA FY14",
+            "REV/RWA FY15"," NPAT_AllocEq_FY14"," NPAT_AllocEq_FY15X"," RegulatoryCapital_AVG_FY15"," RegulatoryCapital_AVG_FY14",
+            "ROE FY14", "ROE FY15"], ",");
     const all   = await db.get();
- 
-    res.send(all);
-});
+    const search= await db.get(filter);
 
-app.get('/csv/find/:col/:val', async (req, res) => {
-    const col   = req.params.col;
-    const val   = req.params.val;
-    const db    = await csvdb("./data/default.csv", ["Col1","Col2","Col3"], ",");
-    const find  = col === "Col1" ? await db.get({"Col1":val}) : col === "Col2" ? await db.get({"Col2":val}) : await db.get({"Col3":val}) ;
-    // const find  = await db.get({"Col1":"Blabla"});
- 
-    res.send(find);
-});
+    var data    = [];
 
-app.get('/comp/all', async (req, res) => {
-    // const db    = await csvdb("./data/companies.csv", ["CMGUnmaskedID","CMGUnmaskedName","ClientTier","GCPStream","GCPBusiness","CMGGlobalBU","CMGSegmentName","GlobalControlPoint","GCPGeography","GlobalRelationshipManagerName","REVENUEFY14","REVENYEFY15X","Deposits_EOP_FY14","Deposits_EOP_FY15x","TotalLimits_EOP_FY14","TotalLimits_EOP_FY15YTD","TotalLimits_EOP_FY15x","RWAFY15","RWAFY14","REV/RWAFY14","REV/RWAFY15","NPAT_AllocEq_FY14","NPAT_AllocEq_FY15X","RegulatoryCapital_AVG_FY15","RegulatoryCapital_AVG_FY14","ROEFY14","ROEFY15"], ",");
-    const db    = await csvdb("./data/companies.csv", ["Col01","Col02","Col03","Col04","Col05","Col06","Col07","Col08","Col09","Col10","Col11","Col12","Col13","Col14","Col15","Col16","Col17","Col18","Col19","Col20","Col21","Col22","Col23","Col24","Col25","Col26","Col27"], ",");
-    const all   = await db.get();
- 
-    res.send(all);
-});
+    for(var i = offset; i < sumol; i++){
+        search[i] !== undefined ? data.push(search[i]) : '';
+    }
 
-app.get('/comp/find/:col/:val', async (req, res) => {
-    const col   = req.params.col;
-    const val   = req.params.val;
-    const db    = await csvdb("./data/companies.csv", ["CMGUnmaskedID", "CMGUnmaskedName", "ClientTier", "GCPStream", "GCPBusiness", "CMGGlobalBU", "CMGSegmentName", "GlobalControlPoint", "GCPGeography", "GlobalRelationshipManagerName", "REVENUE FY14", "REVENYE FY15X", " Deposits_EOP_FY14", " Deposits_EOP_FY15x", " TotalLimits_EOP_FY14", " TotalLimits_EOP_FY15YTD", " TotalLimits_EOP_FY15x", " RWAFY15", " RWA FY14", "REV/RWA FY14", "REV/RWA FY15", " NPAT_AllocEq_FY14", " NPAT_AllocEq_FY15X", " RegulatoryCapital_AVG_FY15", " RegulatoryCapital_AVG_FY14", "ROE FY14", "ROE FY15"], ",");
-    const find  = col === "Col1" ? await db.get({"Col1":val}) : col === "Col2" ? await db.get({"Col2":val}) : await db.get({"Col3":val}) ;
-    // const find  = await db.get({"Col1":"Blabla"});
- 
-    res.send(find);
-});
+    var result  = {
+        "recordsTotal"      : all.length,
+        "recordsFiltered"   : search.length,
+        "data"              : data
+    };
 
-app.get('/tes/all', async (req, res) => {
-    // const db    = await csvdb("./data/companies.csv", ["CMGUnmaskedID","CMGUnmaskedName","ClientTier","GCPStream","GCPBusiness","CMGGlobalBU","CMGSegmentName","GlobalControlPoint","GCPGeography","GlobalRelationshipManagerName","REVENUEFY14","REVENYEFY15X","Deposits_EOP_FY14","Deposits_EOP_FY15x","TotalLimits_EOP_FY14","TotalLimits_EOP_FY15YTD","TotalLimits_EOP_FY15x","RWAFY15","RWAFY14","REV/RWAFY14","REV/RWAFY15","NPAT_AllocEq_FY14","NPAT_AllocEq_FY15X","RegulatoryCapital_AVG_FY15","RegulatoryCapital_AVG_FY14","ROEFY14","ROEFY15"], ",");
-    const db    = await csvdb("./data/tes.csv", ["Col01","Col02","Col03","Col04","Col05","Col06","Col07","Col08","Col09","Col10","Col11","Col12","Col13","Col14","Col15","Col16","Col17","Col18","Col19","Col20","Col21","Col22","Col23","Col24","Col25","Col26","Col27"], ",");
-    const all   = await db.get();
- 
-    res.send(all);
-});
-
-app.get('/tes/find/:col/:val', async (req, res) => {
-    const col   = req.params.col;
-    const val   = req.params.val;
-    // const db    = await csvdb("./data/tes.csv", ["CMGUnmaskedID", "CMGUnmaskedName", "ClientTier", "GCPStream", "GCPBusiness", "CMGGlobalBU", "CMGSegmentName", "GlobalControlPoint", "GCPGeography", "GlobalRelationshipManagerName", "REVENUE FY14", "REVENYE FY15X", " Deposits_EOP_FY14", " Deposits_EOP_FY15x", " TotalLimits_EOP_FY14", " TotalLimits_EOP_FY15YTD", " TotalLimits_EOP_FY15x", " RWAFY15", " RWA FY14", "REV/RWA FY14", "REV/RWA FY15", " NPAT_AllocEq_FY14", " NPAT_AllocEq_FY15X", " RegulatoryCapital_AVG_FY15", " RegulatoryCapital_AVG_FY14", "ROE FY14", "ROE FY15"], ",");
-    const db    = await csvdb("./data/tes.csv", ["Col01","Col02","Col03","Col04","Col05","Col06","Col07","Col08","Col09","Col10","Col11","Col12","Col13","Col14","Col15","Col16","Col17","Col18","Col19","Col20","Col21","Col22","Col23","Col24","Col25","Col26","Col27"], ",");
-    const find  = col === "Col1" ? await db.get({"Col01":val}) : col === "Col2" ? await db.get({"Col02":val}) : await db.get({"Col03":val}) ;
-    // const find  = await db.get({"Col1":"Blabla"});
- 
-    res.send(find);
+    res.send(result);
 });
 
 app.listen(port, () => console.log('Server running on port '+port));

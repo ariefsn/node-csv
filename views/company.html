@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Company</title>
+    <link rel="stylesheet" href="custom.css">
+    <link rel="stylesheet" href="DataTables/datatables.bootstrap.css">
+    <link rel="stylesheet" href="bootstrap3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="nprogress/nprogress.css">
+    <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
+</head>
+<body>
+    <div class="col-md-12" style="top: 10px">
+        <div class="col-md-2 col-md-offset-1">
+            <input type="text" id="CMGUnmaskedID" placeholder="CMGUnmaskedID here" class="form-control">
+        </div>
+        <div class="col-md-2">
+            <input type="text" id="CMGUnmaskedName" placeholder="CMGUnmaskedName here" class="form-control">
+        </div>
+        <div class="col-md-2">
+            <input type="text" id="ClientTier" placeholder="ClientTier here" class="form-control">
+        </div>
+        <div class="col-md-2">
+            <input type="text" id="CMGSegmentName" placeholder="CMGSegmentName here" class="form-control">
+        </div>
+        <div class="col-md-2">
+            <input type="text" id="GlobalControlPoint" placeholder="GlobalControlPoint here" class="form-control">
+        </div>
+        <div class="col-md-12">&nbsp;</div>
+        <table id="myTable" class="table table-bordered table-condensed table-striped table-hover" >
+            <thead>
+                <tr>
+                    <td>CMGUnmaskedID</td>
+                    <td>CMGUnmaskedName</td>
+                    <td>ClientTier</td>
+                    <td>GCPStream</td>
+                    <td>GCPBusiness</td>
+                    <td>CMGSegmentName</td>
+                    <td>GlobalControlPoint</td>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</body>
+<!-- Modal -->
+<div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="detailModalLabel">Modal title</h4>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <div class="col-md-12">
+                        <div class="col-md-5">
+                            <table class="table table-condensed table-bordered table-sm table-striped">
+                                <tr><td>CMGUnmaskedID</td><td>:</td><td><label id="l_CMGUnmaskedID"></label></td></tr>
+                                <tr><td>CMGUnmaskedName</td><td>:</td><td><label id="l_CMGUnmaskedName"></label></td></tr>
+                                <tr><td>ClientTier</td><td>:</td><td><label id="l_ClientTier"></label></td></tr>
+                                <tr><td>GCPStream</td><td>:</td><td><label id="l_GCPStream"></label></td></tr>
+                                <tr><td>GCPBusiness</td><td>:</td><td><label id="l_GCPBusiness"></label></td></tr>
+                                <tr><td>CMGGlobalBU</td><td>:</td><td><label id="l_CMGGlobalBU"></label></td></tr>
+                                <tr><td>CMGSegmentName</td><td>:</td><td><label id="l_CMGSegmentName"></label></td></tr>
+                                <tr><td>GlobalControlPoint</td><td>:</td><td><label id="l_GlobalControlPoint"></label></td></tr>
+                                <tr><td>GCPGeography</td><td>:</td><td><label id="l_GCPGeography"></label></td></tr>
+                                <tr><td>GlobalRelationshipManagerName</td><td>:</td><td><label id="l_GlobalRelationshipManagerName"></label></td></tr>
+                            </table>
+                        </div>
+                        <div class="col-md-7">
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a data-toggle="tab" href="#revenue">Revenue</a></li>
+                                <li><a data-toggle="tab" href="#roe">ROE</a></li>
+                                <li><a data-toggle="tab" href="#rc">RC AVG</a></li>
+                                <li><a data-toggle="tab" href="#deposit">Deposit</a></li>
+                                <li><a data-toggle="tab" href="#totalLimit">Total Limit</a></li>
+                                <li><a data-toggle="tab" href="#npat">NPAT</a></li>
+                                <li><a data-toggle="tab" href="#rwa">RWA</a></li>
+                                <li><a data-toggle="tab" href="#rwarev">RWA REV</a></li>
+                            </ul>
+                            <div class="tab-content">
+                                <div id="revenue" class="tab-pane fade in active">
+                                    <div id="canvasRevenue-container" style="text-align:center">
+                                        <canvas id="chartRevenue" width="400" height="400"></canvas>
+                                    </div>
+                                </div>
+                                <div id="roe" class="tab-pane fade">
+                                    <div id="canvasRoe-container" style="text-align:center">
+                                        <canvas id="chartRoe" width="400" height="400"></canvas>
+                                    </div>
+                                </div>
+                                <div id="rc" class="tab-pane fade">
+                                    <div id="canvasRc-container" style="text-align:center">
+                                        <canvas id="chartRc" width="400" height="400"></canvas>
+                                    </div>
+                                </div>
+                                <div id="deposit" class="tab-pane fade">
+                                    <div id="canvasDeposit-container" style="text-align:center">
+                                        <canvas id="chartDeposit" width="400" height="400"></canvas>
+                                    </div>
+                                </div>
+                                <div id="totalLimit" class="tab-pane fade">
+                                    <div id="canvasTotalLimit-container" style="text-align:center">
+                                        <canvas id="chartTotalLimit" width="400" height="400"></canvas>
+                                    </div>
+                                </div>
+                                <div id="npat" class="tab-pane fade">
+                                    <div id="canvasNPAT-container" style="text-align:center">
+                                        <canvas id="chartNPAT" width="400" height="400"></canvas>
+                                    </div>
+                                </div>
+                                <div id="rwa" class="tab-pane fade">
+                                    <div id="canvasRWA-container" style="text-align:center">
+                                        <canvas id="chartRWA" width="400" height="400"></canvas>
+                                    </div>
+                                </div>
+                                <div id="rwarev" class="tab-pane fade">
+                                    <div id="canvasRWAREV-container" style="text-align:center">
+                                        <canvas id="chartRWAREV" width="400" height="400"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table class="table table-condensed table-bordered">
+                            <tr>
+                                <td class="title_detail_row">REVENUE FY14</td>
+                                <td class="title_detail_row">REVENYE FY15X</td>
+                                <td class="title_detail_row">Deposits EOP_FY14</td>
+                                <td class="title_detail_row">Deposits EOP_FY15x</td>
+                                <td class="title_detail_row">TotalLimits EOP_FY14</td>
+                                <td class="title_detail_row">TotalLimits EOP_FY15YTD</td>
+                                <td class="title_detail_row">TotalLimits EOP_FY15x</td>
+                                <td class="title_detail_row">NPAT_AllocEq FY14</td>
+                                <td class="title_detail_row">NPAT_AllocEq FY15X</td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" id="d_REVENUE_FY14" class="form-control"></td>
+                                <td><input type="text" id="d_REVENYE_FY15X" class="form-control"></td>
+                                <td><input type="text" id="d_Deposits_EOP_FY14" class="form-control"></td>
+                                <td><input type="text" id="d_Deposits_EOP_FY15x" class="form-control"></td>
+                                <td><input type="text" id="d_TotalLimits_EOP_FY14" class="form-control"></td>
+                                <td><input type="text" id="d_TotalLimits_EOP_FY15YTD" class="form-control"></td>
+                                <td><input type="text" id="d_TotalLimits_EOP_FY15x" class="form-control"></td>
+                                <td><input type="text" id="d_NPAT_AllocEq_FY14" class="form-control"></td>
+                                <td><input type="text" id="d_NPAT_AllocEq_FY15X" class="form-control"></td>
+                            </tr>
+                        </table>
+                        <table class="table table-condensed table-bordered">
+                            <tr>
+                                <td class="title_detail_row">RWA_FY14</td>
+                                <td class="title_detail_row">RWAFY15</td>
+                                <td class="title_detail_row">REV_RWA FY14</td>
+                                <td class="title_detail_row">REV_RWA FY15</td>
+                                <td class="title_detail_row">RegulatoryCapital AVG_FY14</td>
+                                <td class="title_detail_row">RegulatoryCapital AVG_FY15</td>
+                                <td class="title_detail_row">ROE_FY14</td>
+                                <td class="title_detail_row">ROE_FY15</td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" id="d_RWA_FY14" class="form-control"></td>
+                                <td><input type="text" id="d_RWAFY15" class="form-control"></td>
+                                <td><input type="text" id="d_REV_RWA_FY14" class="form-control"></td>
+                                <td><input type="text" id="d_REV_RWA_FY15" class="form-control"></td>
+                                <td><input type="text" id="d_RegulatoryCapital_AVG_FY14" class="form-control"></td>
+                                <td><input type="text" id="d_RegulatoryCapital_AVG_FY15" class="form-control"></td>
+                                <td><input type="text" id="d_ROE_FY14" class="form-control"></td>
+                                <td><input type="text" id="d_ROE_FY15" class="form-control"></td>
+                            </tr>
+                        </table>
+                    </div>
+                    </div>
+                </div>
+                <input type="text" id="d_CMGUnmaskedID" class="lahacia">
+                <input type="text" id="d_CMGUnmaskedName" class="lahacia">
+                <input type="text" id="d_ClientTier" class="lahacia">
+                <input type="text" id="d_GCPStream" class="lahacia">
+                <input type="text" id="d_GCPBusiness" class="lahacia">
+                <input type="text" id="d_CMGGlobalBU" class="lahacia">
+                <input type="text" id="d_CMGSegmentName" class="lahacia">
+                <input type="text" id="d_GlobalControlPoint" class="lahacia">
+                <input type="text" id="d_GCPGeography" class="lahacia">
+                <input type="text" id="d_GlobalRelationshipManagerName" class="lahacia">
+                <input type="text" id="d_x" class="lahacia">
+                <input type="text" id="d_y" class="lahacia">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="btn-close-modal" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btn-save"><i id="icon-save" class="glyphicon glyphicon-refresh fa-spin" style="display:none"></i>&nbsp;Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+    <script src="jquery/dist/jquery.min.js"></script>
+    <script src="bootstrap3/dist/js/bootstrap.min.js"></script>
+    <script src="DataTables/datatables.min.js"></script>
+    <script src="DataTables/datatables.bootstrap.js"></script>
+    <script src="nprogress/nprogress.js"></script>
+    <script src="chart.js/dist/Chart.min.js"></script>
+    <script>
+        function setFilter(){
+            CMGUnmaskedID       = $('#CMGUnmaskedID').val();
+            CMGUnmaskedName     = $('#CMGUnmaskedName').val();
+            ClientTier          = $('#ClientTier').val();
+            CMGSegmentName      = $('#CMGSegmentName').val();
+            GlobalControlPoint  = $('#GlobalControlPoint').val();
+            res                 = {};
+
+            CMGUnmaskedID !== "" ? res.CMGUnmaskedID = CMGUnmaskedID : delete res.CMGUnmaskedID;
+            CMGUnmaskedName !== "" ? res.CMGUnmaskedName = CMGUnmaskedName : delete res.CMGUnmaskedName;
+            ClientTier !== "" ? res.ClientTier = ClientTier : delete res.ClientTier;
+            CMGSegmentName !== "" ? res.CMGSegmentName = CMGSegmentName : delete res.CMGSegmentName;
+            GlobalControlPoint !== "" ? res.GlobalControlPoint = GlobalControlPoint : delete res.GlobalControlPoint;
+
+            return res;
+        }
+
+        function getDetail(id){
+            NProgress.start();
+            NProgress.inc();
+            $.ajax({
+                url         : "http://localhost:3000/company/getDetail",
+                method      : 'POST',
+                data        : { CMGUnmaskedID : id },
+                success     : (res) => {
+                    NProgress.done();
+                    $('#detailModalLabel').html("Details Data : "+res[0].CMGUnmaskedID);
+                    $('#btn-save').attr("onclick", "updateDetail('"+res[0].CMGUnmaskedID+"')");
+                    $('#d_CMGUnmaskedID').val(res[0].CMGUnmaskedID);
+                    $('#d_CMGUnmaskedName').val(res[0].CMGUnmaskedName);
+                    $('#d_ClientTier').val(res[0].ClientTier);
+                    $('#d_GCPStream').val(res[0].GCPStream);
+                    $('#d_GCPBusiness').val(res[0].GCPBusiness);
+                    $('#d_CMGGlobalBU').val(res[0].CMGGlobalBU);
+                    $('#d_CMGSegmentName').val(res[0].CMGSegmentName);
+                    $('#d_GlobalControlPoint').val(res[0].GlobalControlPoint);
+                    $('#d_GCPGeography').val(res[0].GCPGeography);
+                    $('#d_GlobalRelationshipManagerName').val(res[0].GlobalRelationshipManagerName);
+                    $('#d_REVENUE_FY14').val(res[0]["REVENUE FY14"]);
+                    $('#d_REVENYE_FY15X').val(res[0]["REVENYE FY15X"]);
+                    $('#d_Deposits_EOP_FY14').val(res[0][" Deposits_EOP_FY14"]);
+                    $('#d_Deposits_EOP_FY15x').val(res[0][" Deposits_EOP_FY15x"]);
+                    $('#d_TotalLimits_EOP_FY14').val(res[0][" TotalLimits_EOP_FY14"]);
+                    $('#d_TotalLimits_EOP_FY15YTD').val(res[0][" TotalLimits_EOP_FY15YTD"]);
+                    $('#d_TotalLimits_EOP_FY15x').val(res[0][" TotalLimits_EOP_FY15x"]);
+                    $('#d_RWAFY15').val(res[0][" RWAFY15"]);
+                    $('#d_RWA_FY14').val(res[0][" RWA FY14"]);
+                    $('#d_REV_RWA_FY14').val(res[0]["REV/RWA FY14"]);
+                    $('#d_REV_RWA_FY15').val(res[0]["REV/RWA FY15"]);
+                    $('#d_NPAT_AllocEq_FY14').val(res[0][" NPAT_AllocEq_FY14"]);
+                    $('#d_NPAT_AllocEq_FY15X').val(res[0][" NPAT_AllocEq_FY15X"]);
+                    $('#d_RegulatoryCapital_AVG_FY15').val(res[0][" RegulatoryCapital_AVG_FY15"]);
+                    $('#d_RegulatoryCapital_AVG_FY14').val(res[0][" RegulatoryCapital_AVG_FY14"]);
+                    $('#d_ROE_FY14').val(res[0]["ROE FY14"]);
+                    $('#d_ROE_FY15').val(res[0]["ROE FY15"]);
+                    $('#d_x').val(res[0]["x"]);
+                    $('#d_y').val(res[0]["y"]);
+                    $('#l_CMGUnmaskedID').html(res[0].CMGUnmaskedID);
+                    $('#l_CMGUnmaskedName').html(res[0].CMGUnmaskedName);
+                    $('#l_ClientTier').html(res[0].ClientTier);
+                    $('#l_GCPStream').html(res[0].GCPStream);
+                    $('#l_GCPBusiness').html(res[0].GCPBusiness);
+                    $('#l_CMGGlobalBU').html(res[0].CMGGlobalBU);
+                    $('#l_CMGSegmentName').html(res[0].CMGSegmentName);
+                    $('#l_GlobalControlPoint').html(res[0].GlobalControlPoint);
+                    $('#l_GCPGeography').html(res[0].GCPGeography);
+                    $('#l_GlobalRelationshipManagerName').html(res[0].GlobalRelationshipManagerName);
+
+                    resetCanvas();
+                    chartRevenue = initChart('pie', 'Revenue', $('#chartRevenue'),
+                        ['Rev14', 'Rev15'],
+                        [$('#d_REVENUE_FY14').val().replace(/,/g, ""), $('#d_REVENYE_FY15X').val().replace(/,/g, "")],
+                        ['red', 'blue'],
+                        ['blue', 'red'],
+                        1, 'black');
+                    chartRoe = initChart('bar', 'ROE', $('#chartRoe'),
+                        ['ROE14', 'ROE15'],
+                        [$('#d_ROE_FY14').val().replace('%', ""), $('#d_ROE_FY15').val().replace('%', "")],
+                        ['lime', 'orange'],
+                        ['green', 'amber'],
+                        1, 'black');
+                    chartRc = initChart('doughnut', 'Regulatory Capital AVG', $('#chartRc'),
+                        ['RC-AVG-14', 'RC-AVG-15'],
+                        [$('#d_RegulatoryCapital_AVG_FY14').val().replace(/,/g, ""), $('#d_RegulatoryCapital_AVG_FY15').val().replace(/,/g, "")],
+                        ['turquoise', 'indigo'],
+                        ['green', 'amber'],
+                        1, 'black');
+                    chartDeposit = initChart('pie', 'Deposit', $('#chartDeposit'),
+                        ['Deposits_EOP_FY14', 'd_Deposits_EOP_FY15x'],
+                        [$('#d_Deposits_EOP_FY14').val().replace(/,/g, ""), $('#d_Deposits_EOP_FY15x').val().replace(/,/g, "")],
+                        ['pink', 'lime'],
+                        ['green', 'amber'],
+                        1, 'black');
+                    chartTotalLimit = initChart('line', 'Total Limit EOP', $('#chartTotalLimit'),
+                        ["0", 'EOP_FY14', 'EOP_FY15YTD', 'EOP_FY15x'],
+                        [0, $('#d_TotalLimits_EOP_FY14').val().indexOf('-') === -1 ? $('#d_TotalLimits_EOP_FY14').val().replace(/,/g, "") : 0,
+                         $('#d_TotalLimits_EOP_FY15YTD').val().indexOf('-') === -1 ? $('#d_TotalLimits_EOP_FY15YTD').val().replace(/,/g, "") : 0,
+                         $('#d_TotalLimits_EOP_FY15x').val().indexOf('-') === -1 ? $('#d_TotalLimits_EOP_FY15x').val().replace(/,/g, "") : 0],
+                        ['rgba(0,0,0,0.05)'],
+                        ['turquoise'],
+                        0, 'black');
+                    chartNPAT = initChart('bar', 'NPAT', $('#chartNPAT'),
+                        ['NPAT_AllocEq_FY14', 'NPAT_AllocEq_FY15X'],
+                        [$('#d_NPAT_AllocEq_FY14').val().replace(/,/g, ""), $('#d_NPAT_AllocEq_FY15X').val().replace(/,/g, "")],
+                        ['lime', 'orange'],
+                        ['green', 'amber'],
+                        1, 'black');
+                    chartRWA = initChart('doughnut', 'RWA', $('#chartRWA'),
+                        ['RWA_FY14', 'RWAFY15'],
+                        [$('#d_RWA_FY14').val().replace(/,/g, ""), $('#d_RWAFY15').val().replace(/,/g, "")],
+                        ['lime', 'orange'],
+                        ['green', 'amber'],
+                        1, 'black');
+                    chartRWAREV = initChart('doughnut', 'RWA REF', $('#chartRWAREV'),
+                        ['REV_RWA_FY14', 'REV_RWA_FY15'],
+                        [$('#d_REV_RWA_FY14').val().replace('%', ""), $('#d_REV_RWA_FY15').val().replace('%', "")],
+                        ['pink', 'aqua'],
+                        ['blue', 'red'],
+                        1, 'black');
+
+                    $('#detailModal').modal('show');
+                }
+            });
+        }
+
+        function initChart(type, title, canvasID, labels = [], data = [], backgroundColor = [], borderColor = [], borderWidth, legendColor){
+            return new Chart(canvasID, {
+                type: type,
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: title,
+                        data: data,
+                        backgroundColor: backgroundColor,
+                        borderColor: borderColor,
+                        borderWidth: borderWidth
+                    }]
+                },
+                options: {
+                    legend: {
+                        display: true,
+                        labels: {
+                            fontColor: legendColor
+                        }
+                    },
+                    scales: {
+                        scaleLabel: {
+                            fontSize : 18
+                        },
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero:true,
+                                // stepSize: 1
+                            }
+                        }]
+                    }
+                }
+            });
+        }
+
+        function updateDetail(id){
+            NProgress.start();
+            NProgress.inc();
+            $("#icon-save").css("display", "inline-block");
+            $("#btn-save").attr("disabled", "disabled");
+            $("#btn-close-modal").attr("disabled", "disabled");
+            $("#btn-close-modal").css("cursor", "not-allowed");
+            $.ajax({
+                url         : "http://localhost:3000/company/update",
+                method      : 'POST',
+                data        : { CMGUnmaskedID : id,
+                                NewData       : {
+                                    "REVENUE FY14"              : $('#d_REVENUE_FY14').val(),
+                                    "REVENYE FY15X"             : $('#d_REVENYE_FY15X').val(),
+                                    " Deposits_EOP_FY14"        : $('#d_Deposits_EOP_FY14').val(),
+                                    " Deposits_EOP_FY15x"       : $('#d_Deposits_EOP_FY15x').val(),
+                                    " TotalLimits_EOP_FY14"     : $('#d_TotalLimits_EOP_FY14').val(),
+                                    " TotalLimits_EOP_FY15YTD"  : $('#d_TotalLimits_EOP_FY15YTD').val(),
+                                    " TotalLimits_EOP_FY15x"    : $('#d_TotalLimits_EOP_FY15x').val(),
+                                    " RWAFY15"                  : $('#d_RWAFY15').val(),
+                                    " RWA FY14"                 : $('#d_RWA_FY14').val(),
+                                    "REV/RWA FY14"              : $('#d_REV_RWA_FY14').val(),
+                                    "REV/RWA FY15"              : $('#d_REV_RWA_FY15').val(),
+                                    " NPAT_AllocEq_FY14"        : $('#d_NPAT_AllocEq_FY14').val(),
+                                    " NPAT_AllocEq_FY15X"       : $('#d_NPAT_AllocEq_FY15X').val(),
+                                    " RegulatoryCapital_AVG_FY14": $('#d_RegulatoryCapital_AVG_FY14').val(),
+                                    " RegulatoryCapital_AVG_FY15": $('#d_RegulatoryCapital_AVG_FY15').val(),
+                                    "ROE FY14"                  : $('#d_ROE_FY14').val(),
+                                    "ROE FY15"                  : $('#d_ROE_FY15').val()
+                                }
+                            },
+                success     : (res) => {
+                    NProgress.done();
+                    console.log(res);
+                    $("#icon-save").css("display", "none");
+                    $("#btn-save").removeAttr("disabled");
+                    $("#btn-close-modal").removeAttr("disabled");
+                    $("#btn-close-modal").css("cursor", "pointer");
+                    $('#detailModal').modal('hide');
+                }
+            });
+        }
+
+        function updateChart(chart, index, value){
+            var ds = chart.config.data.datasets[0].data;
+            ds[index] = value;
+            chart.update();
+        }
+
+        function resetCanvas(){
+            $('#chartRevenue').remove();
+            $('#chartRoe').remove();
+            $('#chartRc').remove();
+            $('#chartDeposit').remove();
+            $('#chartTotalLimit').remove();
+            $('#chartNPAT').remove();
+            $('#chartRWA').remove();
+            $('#chartRWAREV').remove();
+            $('.chartjs-size-monitor').remove();
+            $('#canvasRevenue-container').append('<canvas id="chartRevenue" width="400px" height="400px"><canvas>');
+            $('#canvasRoe-container').append('<canvas id="chartRoe" width="400px" height="400px"><canvas>');
+            $('#canvasRc-container').append('<canvas id="chartRc" width="400px" height="400px"><canvas>');
+            $('#canvasDeposit-container').append('<canvas id="chartDeposit" width="400px" height="400px"><canvas>');
+            $('#canvasTotalLimit-container').append('<canvas id="chartTotalLimit" width="400px" height="400px"><canvas>');
+            $('#canvasNPAT-container').append('<canvas id="chartNPAT" width="400px" height="400px"><canvas>');
+            $('#canvasRWA-container').append('<canvas id="chartRWA" width="400px" height="400px"><canvas>');
+            $('#canvasRWAREV-container').append('<canvas id="chartRWAREV" width="400px" height="400px"><canvas>');
+        }
+
+        $(document).ready(function(){
+            // var chartRevenue;
+            NProgress.start();
+            NProgress.inc();
+            table = $('#myTable').DataTable({ 
+                "processing": true,
+                "language"  : {
+                    processing  : 'Loading Data ... Please Wait!'
+                },
+                "serverSide": true,
+                "searching" : false,
+                "ordering": false,
+                "ajax": {
+                    url         : "http://localhost:3000/company/getData",
+                    type        : "POST",
+                    deferRender : true,
+                    data        : function(d) {
+                        d.filter    = setFilter();
+                    },                    
+                },
+                "initComplete"  : (setting, json) => {
+                    NProgress.done();
+                },
+                "columns": [
+                    {"data": "CMGUnmaskedID",
+                    "render": function(data, type, row, meta){
+                            if(type === 'display'){
+                                data = '<button type="button" class="btn btn-info btn-xs" onclick="getDetail('+"'"+data+"'"+')">'+data+'</button>';
+                            }
+                            return data;
+                        }
+                    },
+                    {"data": "CMGUnmaskedName"},
+                    {"data": "ClientTier"},
+                    {"data": "GCPStream"},
+                    {"data": "GCPBusiness"},
+                    {"data": "CMGSegmentName"},
+                    {"data": "GlobalControlPoint"}
+                ],
+            });
+            $('#CMGUnmaskedID').on( 'keypress', function (e) {
+                if(e.which === 13){
+                    setFilter();
+                    table.ajax.reload();
+                }
+            } );
+            $('#CMGUnmaskedName').on( 'keypress', function (e) {
+                if(e.which === 13){
+                    setFilter();
+                    table.ajax.reload();
+                }
+            } );
+            $('#ClientTier').on( 'keypress', function (e) {
+                if(e.which === 13){
+                    setFilter();
+                    table.ajax.reload();
+                }
+            } );
+            $('#CMGSegmentName').on( 'keypress', function (e) {
+                if(e.which === 13){
+                    setFilter();
+                    table.ajax.reload();
+                }
+            } );
+            $('#GlobalControlPoint').on( 'keypress', function (e) {
+                if(e.which === 13){
+                    setFilter();
+                    table.ajax.reload();
+                }
+            } );
+            // REVENUE
+            $('#d_REVENUE_FY14').on( 'keyup', function () {
+                updateChart(chartRevenue, 0, $('#d_REVENUE_FY14').val().replace(/,/g, ""));
+            } );
+            $('#d_REVENYE_FY15X').on( 'keyup', function () {
+                updateChart(chartRevenue, 1, $('#d_REVENYE_FY15X').val().replace(/,/g, ""));
+            } );
+            // ROE
+            $('#d_ROE_FY14').on( 'keyup', function () {
+                updateChart(chartRoe, 0, $('#d_ROE_FY14').val().replace("%", ""));
+            } );
+            $('#d_ROE_FY15').on( 'keyup', function () {
+                updateChart(chartRoe, 1, $('#d_ROE_FY15').val().replace("%", ""));
+            } );
+            // REGULATORY CAPITAL
+            $('#d_RegulatoryCapital_AVG_FY14').on( 'keyup', function () {
+                updateChart(chartRc, 0, $('#d_RegulatoryCapital_AVG_FY14').val().replace(/,/g, ""));
+            } );
+            $('#d_RegulatoryCapital_AVG_FY15').on( 'keyup', function () {
+                updateChart(chartRc, 1, $('#d_RegulatoryCapital_AVG_FY15').val().replace(/,/g, ""));
+            } );
+            // DEPOSIT
+            $('#d_Deposits_EOP_FY14').on( 'keyup', function () {
+                updateChart(chartDeposit, 0, $('#d_Deposits_EOP_FY14').val().replace(/,/g, ""));
+            } );
+            $('#d_Deposits_EOP_FY15x').on( 'keyup', function () {
+                updateChart(chartDeposit, 1, $('#d_Deposits_EOP_FY15x').val().replace(/,/g, ""));
+            } );
+            // TOTAL LIMIT
+            $('#d_TotalLimits_EOP_FY14').on( 'keyup', function () {
+                updateChart(chartTotalLimit, 1, $('#d_TotalLimits_EOP_FY14').val().replace(/,/g, ""));
+            } );
+            $('#d_TotalLimits_EOP_FY15YTD').on( 'keyup', function () {
+                updateChart(chartTotalLimit, 2, $('#d_TotalLimits_EOP_FY15YTD').val().replace(/,/g, ""));
+            } );
+            $('#d_TotalLimits_EOP_FY15x').on( 'keyup', function () {
+                updateChart(chartTotalLimit, 3, $('#d_TotalLimits_EOP_FY15x').val().replace(/,/g, ""));
+            } );
+            // NPAT
+            $('#d_NPAT_AllocEq_FY14').on( 'keyup', function () {
+                updateChart(chartNPAT, 0, $('#d_NPAT_AllocEq_FY14').val().replace(/,/g, ""));
+            } );
+            $('#d_NPAT_AllocEq_FY15X').on( 'keyup', function () {
+                updateChart(chartNPAT, 1, $('#d_NPAT_AllocEq_FY15X').val().replace(/,/g, ""));
+            } );
+            // RWA
+            $('#d_RWA_FY14').on( 'keyup', function () {
+                updateChart(chartRWA, 0, $('#d_RWA_FY14').val().replace(/,/g, ""));
+            } );
+            $('#d_RWAFY15').on( 'keyup', function () {
+                updateChart(chartRWA, 1, $('#d_RWAFY15').val().replace(/,/g, ""));
+            } );
+            // RWA REV
+            $('#d_REV_RWA_FY14').on( 'keyup', function () {
+                updateChart(chartRWAREV, 0, $('#d_REV_RWA_FY14').val().replace("%", ""));
+            } );
+            $('#d_REV_RWA_FY15').on( 'keyup', function () {
+                updateChart(chartRWAREV, 1, $('#d_REV_RWA_FY15').val().replace("%", ""));
+            } );
+        });
+    </script>
+</html>
